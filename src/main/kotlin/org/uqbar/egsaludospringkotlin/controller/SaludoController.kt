@@ -1,6 +1,6 @@
 package org.uqbar.egsaludospringkotlin.controller
 
-import io.swagger.annotations.ApiOperation
+import io.swagger.v3.oas.annotations.Operation
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
@@ -11,16 +11,16 @@ class SaludoController {
     val saludador = Saludador()
 
     @GetMapping("/saludoDefault")
-    @ApiOperation("Devuelve un saludo por defecto")
+    @Operation(summary = "Devuelve un saludo por defecto")
     fun darSaludo() = this.saludador.buildSaludo()
 
     @GetMapping("/saludo/{persona}")
-    @ApiOperation("Devuelve un saludo personalizado, requiere la persona a saludar")
+    @Operation(summary = "Devuelve un saludo personalizado, requiere la persona a saludar")
     fun darSaludoCustom(@PathVariable persona: String) =
         this.saludador.buildSaludoCustom("Hola $persona!")
 
     @PutMapping("/saludoDefault")
-    @ApiOperation("Actualiza el valor del nuevo saludo por defecto")
+    @Operation(summary = "Actualiza el valor del nuevo saludo por defecto")
     fun actualizarSaludo(@RequestBody nuevoSaludo: String): String {
         this.saludador.cambiarSaludoDefault(nuevoSaludo)
         return "Se actualizó el saludo correctamente"
