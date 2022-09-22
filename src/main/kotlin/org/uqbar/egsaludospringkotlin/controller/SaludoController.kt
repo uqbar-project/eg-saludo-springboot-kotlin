@@ -30,7 +30,7 @@ class SaludoController {
 class Saludador {
     companion object {
         var ultimoId = 1
-        val DODAIN = "dodain"
+        val PERSONA_PROHIBIDA = "dodain"
     }
 
     private var saludoDefault = "Hola mundo!"
@@ -40,8 +40,8 @@ class Saludador {
     fun buildSaludoCustom(mensaje: String) = Saludo(ultimoId++, mensaje)
 
     fun cambiarSaludoDefault(nuevoSaludo: String) {
-        if (nuevoSaludo == DODAIN) {
-            throw BusinessException("No se puede saludar a $DODAIN")
+        if (nuevoSaludo == PERSONA_PROHIBIDA) {
+            throw BusinessException("No se puede saludar a $PERSONA_PROHIBIDA")
         }
         this.saludoDefault = nuevoSaludo
     }

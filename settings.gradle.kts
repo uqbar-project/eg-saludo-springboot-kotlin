@@ -4,4 +4,4 @@ pluginManagement {
 		gradlePluginPortal()
 	}
 }
-rootProject.name = "eg-saludo-spring-kotlin"
+rootProject.name = "eg-saludo-springboot-kotlin"

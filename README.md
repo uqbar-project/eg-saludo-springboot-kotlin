@@ -127,7 +127,7 @@ La respuesta se publica en el body del navegador gracias a que definimos que nue
 
 ### Método PUT
 
-Si queremos modificar el saludo por defecto, que está en la clase Saludador como `@Accessors String saludoDefault = "Hola mundo!"`, tenemos que crear un método nuevo en el controller:
+Si queremos modificar el saludo por defecto, que está en la clase Saludador como `saludoDefault = "Hola mundo!"`, tenemos que crear un método nuevo en el controller:
 
 - dado que estaremos invocando una acción que modifica el estado de mi sistema, podemos utilizar el método `PUT` o el `PATCH`. Pueden ver [la diferencia entre pisar todos los valores de mi estado (PUT) vs. modificar solo una parte del estado (PATCH) en este artículo](https://stackoverflow.com/questions/28459418/use-of-put-vs-patch-methods-in-rest-api-real-life-scenarios). Es importante **respetar el contrato que definen las especificaciones de http para facilitar a quien quiere utilizar nuestros servicios**.
 - el método que escribiremos en el controller también se llama **endpoint**
@@ -168,9 +168,21 @@ Si ahora hacemos el pedido vía GET, veremos que nuestro saludo default se modif
 
 ![get method after put](./images/getMethodAfterPut.gif)
 
-## TODO: Swagger
+## Swagger
 
-https://www.baeldung.com/jacoco-report-exclude
+Las anotaciones que preceden cada método en los controllers son útiles para otra herramienta llamada **Swagger**, que provee un entorno para documentar y testear los endpoints.
+
+Una vez levantado el servidor, podés acceder a la siguiente URL:
+
+```http request
+http://localhost:8080/swagger-ui/index.html
+```
+
+![swagger](./images/swagger.png)
+
+## Exclusión de JaCoCo
+
+La anotación `@Generated` nos permite excluir atributos o métodos de la celosa cobertura que tiene JaCoCo (Java Code Coverage). Para más información pueden ver [este artículo](https://www.baeldung.com/jacoco-report-exclude).
 
 ## Manejo de errores y códigos HTTP
 
@@ -201,7 +213,6 @@ fun cambiarSaludoDefault(nuevoSaludo: String) {
     "status": 500,
     "error": "Internal Server Error",
     "trace": "...el stack trace...",
-    "message": "No se puede saludar a dodain",
     "path": "/saludoDefault"
 }
 ```
@@ -218,17 +229,20 @@ El contrato de los errores de http es:
 
 Para más referencia pueden ver https://http.cat/, https://httpstatusdogs.com/, entre otros.
 
-Lo que tenemos que hacer son dos cosas. Primero configurar el `application.properties` para que devuelva un mensaje de error:
+Lo que tenemos que hacer son dos cosas. Primero configurar el `application.yml` para que devuelva un mensaje de error:
 
-```properties
-server.error.include-message=always
+```yml
+server:
+  error:
+    whitelabel:
+      enabled: false
+    include-message: always
 ```
 
 Y segundo configuraremos la excepción para asociarla al 400:
 
 ```kt
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-@ResponseBody
 class BusinessException(message: String) : RuntimeException(message) {}
 ```
 
@@ -312,7 +326,7 @@ Veamos entonces cómo configurar el grupo de tests
 @WebMvcTest
 @DisplayName("Dado un controller de saludo")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class SaludoApplicationTests(@Autowired val mockMvc: MockMvc) {
+class SaludoApplicationTests(@Autowired val mockMvc: MockMvc) { }
 ```
 
 Las configuraciones importantes son:
@@ -320,7 +334,7 @@ Las configuraciones importantes son:
 - `@AutoConfigureJsonTesters` permite habilitar la serialización a JSON de las respuestas de cada endpoint
 - `@DirtiesContext` es necesario en este caso para probar la actualización del saludo default garantizando la independencia con el test que prueba el saludo inicial "Hola mundo!". De lo contrario podés tener _flaky tests_ dependiendo del orden en el que se evalúen.
 
-Cada test levanta un servidor Spring en modo test, que es más liviano. Sobre él vamos a correr cada escenario:
+Cada test levanta un servidor Spring en modo test, lo cual pese a ser más liviano que un servidor en modo productivo, lleva su tiempo. Sobre él vamos a correr cada escenario:
 
 ```kt
 @Test
@@ -346,7 +360,7 @@ fun `actualizar el saludo a un valor incorrecto produce un error de usuario`() {
 }
 ```
 
-Podríamos chequear el mensaje de error, esto acopla un poco más el test a la regla de negocio (cualquier cambio en el mensaje de error rompe el test). Como el método http es PUT, el método que usamos es `MockMvcRequestBuilders.put`
+Podríamos chequear el mensaje de error, algo que acopla un poco más el test a la regla de negocio (cualquier cambio en el mensaje de error rompe el test). Como el método http es PUT, el método que usamos es `MockMvcRequestBuilders.put`
 
 El tercer test tiene como parte interesante que estamos forzando el character set a UTF-8 para no tener problemas con las tildes (algo que Spring Boot decidió cambiar a partir de la versión 2.2.0). Luego lo que hace es bastante directo:
 
@@ -366,6 +380,20 @@ fun `actualizar el saludo a un valor ok actualiza correctamente`() {
 ```
 
 Pueden ver ustedes el resto de los tests.
+
+## Evitando levantar un contexto en cada test
+
+Si tenemos una gran cantidad de test levantar un contexto nuevo en cada uno de ellos puede volverlo poco práctico. En este caso una alternativa más barata que nos permite eliminar la anotación `@DirtiesContext` es dejar el saludo default como estaba al final de cada test:
+
+```kt
+@AfterEach
+fun `volvemos a dejar el saludo por defecto como estaba`() {
+    mockMvc.perform(MockMvcRequestBuilders.put("/saludoDefault").content("Hola mundo!"))
+        .andExpect(status().isOk)
+}
+```
+
+Con el agregado de chequear que el saludo se haya actualizado correctamente, los tests corren más rápido.
 
 ## Resumen de la arquitectura
 
