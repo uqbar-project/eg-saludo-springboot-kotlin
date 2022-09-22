@@ -172,7 +172,7 @@ Las anotaciones que preceden cada método en los controllers son útiles para ot
 
 Una vez levantado el servidor, podés acceder a la siguiente URL:
 
-```http
+```
 http://localhost:8080/swagger-ui/index.html
 ```
 
