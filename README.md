@@ -153,20 +153,18 @@ El controller delega al setter implícito del Saludador, y luego devuelve
 
 ### ¿Dónde lo pruebo?
 
-Para probar nuestro endpoint utilizaremos [POSTMAN](https://www.postman.com/downloads/) (otras variantes son [Insomnia](https://support.insomnia.rest/article/23-installation), [Advanced REST Client](https://chrome.google.com/webstore/detail/advanced-rest-client/hgmloofddffdnphfgcellkdfbfbjeloo?hl=es)), el cliente web de nuestra aplicación. Hay que seguir los siguientes pasos:
+En este caso vamos a usar Insomnia, da lo mismo si querés usar POSTMAN o Swagger (ver más abajo). Podés importar a tu colección el [archivo de Insomnia](./Insomnia_Saludo.json) que está en el raíz de este repositorio, o si no podés manualmente definir un endpoint PUT de la siguiente manera:
 
 - configurar el endpoint
 - definirle el método PUT
 - ir a la solapa body y escribir un saludo default (lo que constituye nuestro _payload_)
 - ejecutar el endpoint
 
-![calling put method](./images/putMethod.gif)
+Una vez que tengas configurado tu _request_, asegurate de tener levantada la aplicación (Run > SaludoApplication en nuestro caso) y entonces hacé la llamada:
 
-En el video vemos cómo levantamos la aplicación, luego vamos a POSTMAN, creamos una collection que agrupa varios requests, y luego configuramos la llamada al endpoint. Por último, luego de ejecutar vemos la respuesta en el body y el status 200.
+![calling put method](./images/putMethodInsomnia.gif)
 
-Si ahora hacemos el pedido vía GET, veremos que nuestro saludo default se modificó:
-
-![get method after put](./images/getMethodAfterPut.gif)
+Con el status 200 del PUT, podemos verificar mediante un pedido vía GET que nuestro saludo default se modificó.
 
 ## Swagger
 
@@ -174,7 +172,7 @@ Las anotaciones que preceden cada método en los controllers son útiles para ot
 
 Una vez levantado el servidor, podés acceder a la siguiente URL:
 
-```http request
+```http
 http://localhost:8080/swagger-ui/index.html
 ```
 
