@@ -21,9 +21,6 @@ jobs:
       - uses: gradle/gradle-build-action@v2
         with:
           arguments: runOnGitHub
-          distributions-cache-enabled: true
-          dependencies-cache-enabled: true
-          configuration-cache-enabled: true
 
       # Send JaCoCo reports to codecov
       - run: bash <(curl -s https://codecov.io/bash)
