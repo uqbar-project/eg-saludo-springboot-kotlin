@@ -1,6 +1,7 @@
 package org.uqbar.egsaludospringkotlin
 
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,7 +18,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 @DisplayName("Dado un controller de saludo")
 // en lugar de hacer esto...
 // @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-// ...que genera un contexto por cada test, utilizamos la anotación @AfterAll
+// ...que genera un contexto por cada test, utilizamos la anotación @AfterEach
 class SaludoApplicationTests(@Autowired val mockMvc: MockMvc) {
 
 	@Test
@@ -29,10 +30,10 @@ class SaludoApplicationTests(@Autowired val mockMvc: MockMvc) {
 
 	@Test
 	fun `actualizar el saludo a un valor incorrecto produce un error de usuario`() {
-		mockMvc.perform(put("/saludoDefault").content("dodain"))
+		val message = mockMvc.perform(put("/saludoDefault").content("dodain"))
 			.andExpect(status().isBadRequest)
-//		mockMvc no pasa el mensaje si hay un Bad Request
-//			.andExpect(jsonPath("$.message").value("No se puede saludar a " + Saludador.DODAIN))
+			.andReturn().resolvedException?.message
+		assertEquals("No se puede saludar a dodain", message)
 	}
 
 	@Test
