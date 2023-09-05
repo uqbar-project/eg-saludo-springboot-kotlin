@@ -1,6 +1,6 @@
 # Primer ejemplo Servicio REST: Saludo con Springboot
 
-[![build](https://github.com/uqbar-project/saludo-springboot/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/uqbar-project/saludo-springboot/actions/workflows/build.yml) [![codecov](https://codecov.io/gh/uqbar-project/eg-saludo-springboot-kotlin/branch/master/graph/badge.svg?token=HIZZMA3ILU)](https://codecov.io/gh/uqbar-project/eg-saludo-springboot-kotlin)
+[![build](https://github.com/uqbar-project/eg-saludo-springboot-kotlin/actions/workflows/build.yml/badge.svg)](https://github.com/uqbar-project/eg-saludo-springboot-kotlin/actions/workflows/build.yml) [![codecov](https://codecov.io/gh/uqbar-project/eg-saludo-springboot-kotlin/branch/master/graph/badge.svg?token=HIZZMA3ILU)](https://codecov.io/gh/uqbar-project/eg-saludo-springboot-kotlin)
 
 ## Qué es Spring Boot
 
