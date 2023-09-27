@@ -109,7 +109,7 @@ la annotation `GetMapping` permite asociarla con una **ruta** de nuestro web ser
 - el puerto (que por defecto es 8080)
 - y la ruta específica `"/saludoDefault"`, vía GET, que se asocia al método saludar
 
-Esto permite que levantemos nuestro servidor Jetty con Springboot y desde un navegador probemos:
+Esto permite que levantemos nuestro servidor web con Springboot y por ahora desde un navegador probemos:
 
 `http://localhost:8080/saludoDefault`
 
@@ -129,7 +129,7 @@ La respuesta se publica en el body del navegador gracias a que definimos que nue
 
 Si queremos modificar el saludo por defecto, que está en la clase Saludador como `saludoDefault = "Hola mundo!"`, tenemos que crear un método nuevo en el controller:
 
-- dado que estaremos invocando una acción que modifica el estado de mi sistema, podemos utilizar el método `PUT` o el `PATCH`. Pueden ver [la diferencia entre pisar todos los valores de mi estado (PUT) vs. modificar solo una parte del estado (PATCH) en este artículo](https://stackoverflow.com/questions/28459418/use-of-put-vs-patch-methods-in-rest-api-real-life-scenarios). Es importante **respetar el contrato que definen las especificaciones de http para facilitar a quien quiere utilizar nuestros servicios**.
+- dado que estaremos invocando una acción que modifica el estado de mi sistema, podemos utilizar el método `PUT` o el `PATCH`. Pueden ver [la diferencia entre pisar todos los valores de mi estado (PUT) vs. modificar solo una parte del estado (PATCH) en este artículo](https://stackoverflow.com/questions/28459418/use-of-put-vs-patch-methods-in-rest-api-real-life-scenarios). Es importante **respetar el contrato que definen las especificaciones de http para facilitar el uso a quien quiere utilizar nuestros servicios**.
 - el método que escribiremos en el controller también se llama **endpoint**
 - podemos pasarle parámetros en el header, pero vamos a preferir utilizar el body. En este caso sencillo vamos a pasar un string plano, en otros donde necesitemos pasar más información evitaremos el _long parameter method_ abstrayendo un objeto, que se escribirá como un JSON en nuestro cliente.
 
