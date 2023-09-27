@@ -12,16 +12,16 @@ class SaludoController {
 
     @GetMapping("/saludoDefault")
     @Operation(summary = "Devuelve un saludo por defecto")
-    fun darSaludo() = this.saludador.buildSaludo()
+    fun saludar() = this.saludador.buildSaludo()
 
     @GetMapping("/saludo/{persona}")
     @Operation(summary = "Devuelve un saludo personalizado, requiere la persona a saludar")
-    fun darSaludoCustom(@PathVariable persona: String) =
+    fun saludarPersonalizadamente(@PathVariable persona: String) =
         this.saludador.buildSaludoCustom("Hola $persona!")
 
     @PutMapping("/saludoDefault")
     @Operation(summary = "Actualiza el valor del nuevo saludo por defecto")
-    fun actualizarSaludo(@RequestBody nuevoSaludo: String): String {
+    fun actualizarSaludoPersonalizado(@RequestBody nuevoSaludo: String): String {
         this.saludador.cambiarSaludoDefault(nuevoSaludo)
         return "Se actualizó el saludo correctamente"
     }

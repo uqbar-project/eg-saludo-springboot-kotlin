@@ -64,7 +64,7 @@ class SaludoController {
 
     @GetMapping("/saludoDefault")
     @ApiOperation("Devuelve un saludo por defecto")
-    fun darSaludo() = this.saludador.buildSaludo()
+    fun saludar() = this.saludador.buildSaludo()
 }
 
 class Saludador {
@@ -100,14 +100,14 @@ Si vieron la definición del método en el controller
 
 ```kt
 @GetMapping("/saludoDefault")
-fun darSaludo() = this.saludador.buildSaludo()
+fun saludar() = this.saludador.buildSaludo()
 ```
 
 la annotation `GetMapping` permite asociarla con una **ruta** de nuestro web server, que se forma con
 
 - nuestra IP (`localhost`)
 - el puerto (que por defecto es 8080)
-- y la ruta específica `"/saludoDefault"`, vía GET, que se asocia al método darSaludo
+- y la ruta específica `"/saludoDefault"`, vía GET, que se asocia al método saludar
 
 Esto permite que levantemos nuestro servidor Jetty con Springboot y desde un navegador probemos:
 
@@ -138,7 +138,7 @@ Veamos la definición del controller:
 ```kt
 @PutMapping("/saludoDefault")
 @ApiOperation("Actualiza el valor del nuevo saludo por defecto")
-fun actualizarSaludo(@RequestBody nuevoSaludo: String): String {
+fun actualizarSaludoPersonalizado(@RequestBody nuevoSaludo: String): String {
     this.saludador.cambiarSaludoDefault(nuevoSaludo)
     return "Se actualizó el saludo correctamente"
 }
@@ -295,7 +295,7 @@ Para el saludo custom, vamos a hacer un pedido GET donde dentro de la URI querem
 ```kt
 @GetMapping("/saludo/{persona}")
 @ApiOperation("Devuelve un saludo personalizado, requiere la persona a saludar")
-fun darSaludoCustom(@PathVariable persona: String) =
+fun saludarPersonalizadamente(@PathVariable persona: String) =
     this.saludador.buildSaludoCustom("Hola $persona!")
 ```
 
