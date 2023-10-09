@@ -34,8 +34,8 @@ class SaludoController {
 
 class Saludador {
     companion object {
-        var ultimoId = 1
-        val PERSONA_PROHIBIDA = "dodain"
+        private var ultimoId = 1
+        const val PERSONA_PROHIBIDA = "dodain"
     }
 
     private var saludoDefault = "Hola mundo!"
