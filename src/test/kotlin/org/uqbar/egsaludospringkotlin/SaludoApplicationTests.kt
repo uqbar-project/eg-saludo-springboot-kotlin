@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
@@ -21,6 +22,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 // ...que genera un contexto por cada test, utilizamos la anotación @AfterEach
 class SaludoApplicationTests(@Autowired val mockMvc: MockMvc) {
 
+	private fun plainTextPut(url: String) = put(url).contentType(MediaType.TEXT_PLAIN)
+
 	@Test
 	fun `el saludo default es el que tiene el saludador`() {
 		mockMvc.perform(get("/saludoDefault"))
@@ -30,7 +33,7 @@ class SaludoApplicationTests(@Autowired val mockMvc: MockMvc) {
 
 	@Test
 	fun `actualizar el saludo a un valor incorrecto produce un error de usuario`() {
-		val message = mockMvc.perform(put("/saludoDefault").content("dodain"))
+		val message = mockMvc.perform(plainTextPut("/saludoDefault").content("dodain"))
 			.andExpect(status().isBadRequest)
 			.andReturn().resolvedException?.message
 		assertEquals("No se puede saludar a dodain", message)
@@ -39,7 +42,7 @@ class SaludoApplicationTests(@Autowired val mockMvc: MockMvc) {
 	@Test
 	fun `actualizar el saludo a un valor ok actualiza correctamente`() {
 		val nuevoSaludoDefault = "Hola San Martín!"
-		mockMvc.perform(put("/saludoDefault").content(nuevoSaludoDefault))
+		mockMvc.perform(plainTextPut("/saludoDefault").content(nuevoSaludoDefault))
 			.andExpect(status().isOk)
 		mockMvc.perform(get("/saludoDefault"))
 			.andExpect(status().isOk)
@@ -55,7 +58,7 @@ class SaludoApplicationTests(@Autowired val mockMvc: MockMvc) {
 
 	@AfterEach
 	fun `volvemos a dejar el saludo por defecto como estaba`() {
-		mockMvc.perform(put("/saludoDefault").content("Hola mundo!"))
+		mockMvc.perform(plainTextPut("/saludoDefault").content("Hola mundo!"))
 			.andExpect(status().isOk)
 	}
 }

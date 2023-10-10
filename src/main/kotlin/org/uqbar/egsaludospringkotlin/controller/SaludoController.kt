@@ -2,6 +2,7 @@ package org.uqbar.egsaludospringkotlin.controller
 
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
 import javax.annotation.processing.Generated
@@ -19,7 +20,11 @@ class SaludoController {
     fun saludarPersonalizadamente(@PathVariable persona: String) =
         this.saludador.buildSaludoCustom("Hola $persona!")
 
-    @PutMapping("/saludoDefault")
+    @PutMapping(
+        path = ["/saludoDefault"],
+        consumes = [MediaType.TEXT_PLAIN_VALUE],
+        produces = [MediaType.TEXT_PLAIN_VALUE]
+    )
     @Operation(summary = "Actualiza el valor del nuevo saludo por defecto")
     fun actualizarSaludoPersonalizado(@RequestBody nuevoSaludo: String): String {
         this.saludador.cambiarSaludoDefault(nuevoSaludo)
@@ -29,8 +34,8 @@ class SaludoController {
 
 class Saludador {
     companion object {
-        var ultimoId = 1
-        val PERSONA_PROHIBIDA = "dodain"
+        private var ultimoId = 1
+        const val PERSONA_PROHIBIDA = "dodain"
     }
 
     private var saludoDefault = "Hola mundo!"
