@@ -22,7 +22,6 @@ class SaludoController {
         consumes = [MediaType.TEXT_PLAIN_VALUE],
         produces = [MediaType.TEXT_PLAIN_VALUE]
     )
-    @Operation(summary = "Actualiza el valor del nuevo saludo por defecto")
     fun actualizarSaludoPersonalizado(@RequestBody nuevoSaludo: String): String {
         this.saludador.cambiarSaludoDefault(nuevoSaludo)
         return "Se actualizó el saludo correctamente"
@@ -58,4 +57,4 @@ data class Saludo(
 }
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-class BusinessException(message: String) : RuntimeException(message) {}
+class BusinessException(message: String) : RuntimeException(message)
