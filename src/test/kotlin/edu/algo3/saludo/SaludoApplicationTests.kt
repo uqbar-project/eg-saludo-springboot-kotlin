@@ -1,4 +1,4 @@
-package org.uqbar.egsaludospringkotlin
+package edu.algo3.saludo
 
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -62,3 +62,4 @@ class SaludoApplicationTests(@Autowired val mockMvc: MockMvc) {
 			.andExpect(status().isOk)
 	}
 }
+

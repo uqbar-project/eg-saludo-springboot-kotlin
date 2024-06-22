@@ -1,6 +1,5 @@
-package org.uqbar.egsaludospringkotlin.controller
+package edu.algo3.saludo.controller
 
-import io.swagger.v3.oas.annotations.Operation
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
@@ -12,11 +11,9 @@ class SaludoController {
     val saludador = Saludador()
 
     @GetMapping("/saludoDefault")
-    @Operation(summary = "Devuelve un saludo por defecto")
     fun saludar() = this.saludador.buildSaludo()
 
     @GetMapping("/saludo/{persona}")
-    @Operation(summary = "Devuelve un saludo personalizado, requiere la persona a saludar")
     fun saludarPersonalizadamente(@PathVariable persona: String) =
         this.saludador.buildSaludoCustom("Hola $persona!")
 

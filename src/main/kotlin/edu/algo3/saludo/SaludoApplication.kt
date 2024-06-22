@@ -1,4 +1,4 @@
-package org.uqbar.egsaludospringkotlin
+package edu.algo3.saludo
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
