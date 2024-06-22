@@ -153,7 +153,7 @@ El controller delega al setter implícito del Saludador, y luego devuelve
 
 ### ¿Dónde lo pruebo?
 
-En este caso vamos a usar Insomnia, da lo mismo si querés usar POSTMAN o Swagger (ver más abajo). Podés importar a tu colección el [archivo de Insomnia](./Insomnia_Saludo.json) que está en el raíz de este repositorio, o si no podés manualmente definir un endpoint PUT de la siguiente manera:
+En este caso vamos a usar Insomnia, da lo mismo si querés usar POSTMAN. Podés importar a tu colección el [archivo de Insomnia](./Insomnia_Saludo.json) que está en el raíz de este repositorio, o si no podés manualmente definir un endpoint PUT de la siguiente manera:
 
 - configurar el endpoint
 - definirle el método PUT
@@ -165,18 +165,6 @@ Una vez que tengas configurado tu _request_, asegurate de tener levantada la apl
 ![calling put method](./images/putMethodInsomnia.gif)
 
 Con el status 200 del PUT, podemos verificar mediante un pedido vía GET que nuestro saludo default se modificó.
-
-## Swagger
-
-Las anotaciones que preceden cada método en los controllers son útiles para otra herramienta llamada **Swagger**, que provee un entorno para documentar y testear los endpoints.
-
-Una vez levantado el servidor, podés acceder a la siguiente URL:
-
-```
-http://localhost:8080/swagger-ui/index.html
-```
-
-![swagger](./images/swagger.png)
 
 ## Exclusión de JaCoCo
 
