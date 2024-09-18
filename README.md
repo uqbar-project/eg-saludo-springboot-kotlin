@@ -67,12 +67,9 @@ class SaludoController {
     fun saludar() = this.saludador.buildSaludo()
 }
 
-class Saludador {
-    companion object {
-        var ultimoId = 1
-        val DODAIN = "dodain"
-    }
+var ultimoId = 1
 
+class Saludador {
     private var saludoDefault = "Hola mundo!"
 
     fun buildSaludo() = buildSaludoCustom(this.saludoDefault)
@@ -183,12 +180,15 @@ El objeto saludo es un value object, su objetivo es proveer un saludo inmutable.
 Entonces modificamos un poco el negocio para disparar el error:
 
 ```kt
-fun cambiarSaludoDefault(nuevoSaludo: String) {
-    if (nuevoSaludo == DODAIN) {
-        throw BusinessException("No se puede saludar a $DODAIN")
+const val PERSONA_PROHIBIDA = "dodain"
+
+class Saludador {
+  fun cambiarSaludoDefault(nuevoSaludo: String) {
+    if (nuevoSaludo == PERSONA_PROHIBIDA) {
+      throw BusinessException("No se puede saludar a $PERSONA_PROHIBIDA")
     }
     this.saludoDefault = nuevoSaludo
-}
+  }
 ```
 
 ¿Qué recibimos cuando queremos modificar nuestro saludo a "dodain"?
@@ -207,11 +207,11 @@ Bueno, el servidor Web de Java es inteligente y está haciendo un catch del erro
 
 El contrato de los errores de http es:
 
-| Código de error | Qué indica |
-| --- | --- |
-| 20x (200, 201, 202...) | Todo anduvo ok |
-| 40x (400, 401, 402...) | Error de usuario (400 - faltan parámetros, 401 - no estás autenticado, 403 - faltan permisos, 404 - no existe lo que quiero actualizar, etc.) |
-| 50x (500, 501, 502...) | Error de programa (división por cero, referencia nula, etc.) |
+| Código de error | Qué indica                                                                                                                      |
+| --- |---------------------------------------------------------------------------------------------------------------------------------|
+| 20x (200, 201, 202...) | Todo anduvo ok                                                                                                                  |
+| 40x (400, 401, 402...) | Error de usuario (400 - faltan parámetros, 401 - no estás autenticado, 403 - faltan permisos, 404 - no existe el recurso, etc.) |
+| 50x (500, 501, 502...) | Error de programa (división por cero, referencia nula, etc.)                                                                    |
 
 Para más referencia pueden ver https://http.cat/, https://httpstatusdogs.com/, entre otros.
 
@@ -264,7 +264,7 @@ Para más información pueden consultar [la especificación oficial para el prot
 
 ### Idempotencia
 
-La especificación de http pide que los métodos GET, HEAD, PUT y DELETE sean [**idempotentes**](https://es.wikipedia.org/wiki/Idempotencia), es decir, que el request http se pueda realizar varias veces y aun así conseguir el mismo resultado que se obtendría si se realizase una sola vez. Es una buena práctica respetar este contrato:
+La especificación de http pide que los métodos GET, HEAD, PUT y DELETE sean [**idempotentes**](https://es.wikipedia.org/wiki/Idempotencia), es decir, que el request http se pueda realizar varias veces y mantener el mismo estado aun cuando lo llamemos una y otra vez. Es una buena práctica respetar este contrato:
 
 - las operaciones GET, al no tener efecto colateral, garantizan esta propiedad
 - las operaciones DELETE, la primera vez borran el recurso (y se obtiene un 200 - OK), luego tendremos un 404 (recurso no encontrado), lo cual está bien **porque el servidor mantiene el mismo estado que luego de invocar la primera operación DELETE**
@@ -274,7 +274,7 @@ La especificación de http pide que los métodos GET, HEAD, PUT y DELETE sean [*
 Para más información pueden investigar:
 
 - [la especificación RFC-7231](https://tools.ietf.org/html/rfc7231#section-4.2.2)
-- [el artículo de Mozilla](https://developer.mozilla.org/en-US/docs/Glossary/idempotent)
+- [este artículo de Mozilla](https://developer.mozilla.org/en-US/docs/Glossary/idempotent)
 
 ## Saludo custom
 
@@ -287,7 +287,7 @@ fun saludarPersonalizadamente(@PathVariable persona: String) =
     this.saludador.buildSaludoCustom("Hola $persona!")
 ```
 
-Esto se prueba en un navegador o POSTMAN:
+Esto se prueba en cualquier cliente web:
 
 ```
 http://localhost:8080/saludo/Julian
@@ -311,16 +311,27 @@ Veamos entonces cómo configurar el grupo de tests
 @AutoConfigureJsonTesters
 @WebMvcTest
 @DisplayName("Dado un controller de saludo")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class SaludoApplicationTests(@Autowired val mockMvc: MockMvc) { }
 ```
 
 Las configuraciones importantes son:
 
 - `@AutoConfigureJsonTesters` permite habilitar la serialización a JSON de las respuestas de cada endpoint
-- `@DirtiesContext` es necesario en este caso para probar la actualización del saludo default garantizando la independencia con el test que prueba el saludo inicial "Hola mundo!". De lo contrario podés tener _flaky tests_ dependiendo del orden en el que se evalúen.
+- si nosotros queremos testear la actualización del saludo default, eso puede producir una dependencia de nuestros tests (ya que si primero ejecuta el test que cambia el saludo default y después testeamos el saludo default no puede devolvernos "Hola mundo"). Esto se resuelve de dos maneras diferentes:
+  - agregando la anotación `@DirtiesContext`: eso reinicia el contexto entre cada test. La desventaja es que **los tests se ejecutan mucho más lento**, porque para cada test necesitamos inicializar el application server. Si bien MockMvc es un contexto más liviano que el ambiente productivo, se nota que es mucho más pesado que los tests que ejecutábamos anteriormente en nuestra JDK.
+  - otra variante es tener un método de limpieza `@AfterEach` que vuelva nuestro sistema a un estado inicial. Lo más fácil es setear como saludo default "Hola mundo".
 
-Cada test levanta un servidor Spring en modo test, lo cual pese a ser más liviano que un servidor en modo productivo, lleva su tiempo. Sobre él vamos a correr cada escenario:
+```kt
+@AfterEach
+fun `volvemos a dejar el saludo por defecto como estaba`() {
+    mockMvc.perform(MockMvcRequestBuilders.put("/saludoDefault").content("Hola mundo!"))
+        .andExpect(status().isOk)
+}
+```
+
+### Primer test: caso feliz del saludo default
+
+Ahora sí, construimos nuestro primer test:
 
 ```kt
 @Test
@@ -336,6 +347,8 @@ El primer test hace el llamado a la URI "/saludoDefault" vía get (por eso el m�
 - que el código de http es 200
 - que el JSON tiene un atributo "saludo" con el valor "Hola mundo!" (para eso nos valemos de un _extension method_ getField, que pueden ver en el archivo, lo que hace es convertir la respuesta JSON que se ve como string, a un mapa de propiedades y luego obtiene el valor de la propiedad que estamos buscando)
 
+### Segundo test: actualizar con error
+
 Ahora veremos el test que prueba el caso inválido al actualizar el saludo por defecto
 
 ```kt
@@ -347,6 +360,8 @@ fun `actualizar el saludo a un valor incorrecto produce un error de usuario`() {
 ```
 
 Podríamos chequear el mensaje de error, algo que acopla un poco más el test a la regla de negocio (cualquier cambio en el mensaje de error rompe el test). Como el método http es PUT, el método que usamos es `MockMvcRequestBuilders.put`
+
+### Tercer test: caso feliz de actualizar
 
 El tercer test tiene como parte interesante que estamos forzando el character set a UTF-8 para no tener problemas con las tildes (algo que Spring Boot decidió cambiar a partir de la versión 2.2.0). Luego lo que hace es bastante directo:
 
@@ -366,20 +381,6 @@ fun `actualizar el saludo a un valor ok actualiza correctamente`() {
 ```
 
 Pueden ver ustedes el resto de los tests.
-
-## Evitando levantar un contexto en cada test
-
-Si tenemos una gran cantidad de test levantar un contexto nuevo en cada uno de ellos puede volverlo poco práctico. En este caso una alternativa más barata que nos permite eliminar la anotación `@DirtiesContext` es dejar el saludo default como estaba al final de cada test:
-
-```kt
-@AfterEach
-fun `volvemos a dejar el saludo por defecto como estaba`() {
-    mockMvc.perform(MockMvcRequestBuilders.put("/saludoDefault").content("Hola mundo!"))
-        .andExpect(status().isOk)
-}
-```
-
-Con el agregado de chequear que el saludo se haya actualizado correctamente, los tests corren más rápido.
 
 ## Resumen de la arquitectura
 

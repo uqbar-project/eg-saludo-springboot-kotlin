@@ -28,12 +28,10 @@ class SaludoController {
     }
 }
 
-class Saludador {
-    companion object {
-        private var ultimoId = 1
-        const val PERSONA_PROHIBIDA = "dodain"
-    }
+var ultimoId = 1
+const val PERSONA_PROHIBIDA = "dodain"
 
+class Saludador {
     private var saludoDefault = "Hola mundo!"
 
     fun buildSaludo() = buildSaludoCustom(this.saludoDefault)
