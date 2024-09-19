@@ -63,7 +63,6 @@ class SaludoController {
     val saludador = Saludador()
 
     @GetMapping("/saludoDefault")
-    @ApiOperation("Devuelve un saludo por defecto")
     fun saludar() = this.saludador.buildSaludo()
 }
 
@@ -134,10 +133,12 @@ Veamos la definición del controller:
 
 ```kt
 @PutMapping("/saludoDefault")
-@ApiOperation("Actualiza el valor del nuevo saludo por defecto")
 fun actualizarSaludoPersonalizado(@RequestBody nuevoSaludo: String): String {
     this.saludador.cambiarSaludoDefault(nuevoSaludo)
     return "Se actualizó el saludo correctamente"
+        // en realidad deberíamos devolver el objeto actualizado
+        // por ser nuestro primer ejemplo lo dejamos pasar
+        // a partir de los próximos ejemplos es lo que vamos a hacer
 }
 ```
 
@@ -282,7 +283,6 @@ Para el saludo custom, vamos a hacer un pedido GET donde dentro de la URI querem
 
 ```kt
 @GetMapping("/saludo/{persona}")
-@ApiOperation("Devuelve un saludo personalizado, requiere la persona a saludar")
 fun saludarPersonalizadamente(@PathVariable persona: String) =
     this.saludador.buildSaludoCustom("Hola $persona!")
 ```
