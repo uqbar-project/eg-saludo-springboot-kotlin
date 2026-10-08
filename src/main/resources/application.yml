@@ -1,5 +1,7 @@
-server:
-  error:
-    whitelabel:
-      enabled: false
-    include-message: always
+spring:
+  web:
+    error:
+      whitelabel:
+        enabled: false
+      include-message: always
+      include-binding-errors: always

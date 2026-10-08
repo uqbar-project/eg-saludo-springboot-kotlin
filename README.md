@@ -219,11 +219,13 @@ Para más referencia pueden ver https://http.cat/, https://httpstatusdogs.com/, 
 Lo que tenemos que hacer son dos cosas. Primero configurar el `application.yml` para que devuelva un mensaje de error:
 
 ```yml
-server:
-  error:
-    whitelabel:
-      enabled: false
-    include-message: always
+spring:
+  web:
+    error:
+      whitelabel:
+        enabled: false
+      include-message: always
+      include-binding-errors: always
 ```
 
 Y segundo configuraremos la excepción para asociarla al 400:
